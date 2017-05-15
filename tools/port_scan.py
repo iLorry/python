@@ -9,7 +9,7 @@
 #        Email: cclorry@gmail.com
 #     HomePage:
 #      Version: 0.0.1
-#   LastChange: 2017-05-16 01:50:28
+#   LastChange: 2017-05-16 02:13:09
 #      History:
 #=============================================================================
 
@@ -53,13 +53,13 @@ def main():
 
     parser = argparse.ArgumentParser(description='Scan the hosts\'s port.', prefix_chars='-/')
 
-    parser.add_argument('-H', '--hosts', dest='hosts', default='192.168.1.', type=str, help='The IP segment.', metavar='192.168.1.')
-    parser.add_argument('-b', '--begin', dest='begin', default=1, type=int, help='The begin of the IP segment.', metavar='1')
-    parser.add_argument('-e', '--end', dest='end', default=None, type=int, help='The end of the IP segment.', metavar='254')
-    parser.add_argument('-p', '--ports', dest='ports', default='80,443', type=str, help='Target ports.', metavar='80,443')
-    parser.add_argument('-t', '--timeout', dest='timeout', default=1, type=int, help='Timeout.', metavar='1')
-    parser.add_argument('-v', '--verbose', dest='verbose', default=0, action='count', help='Verbose mode.')
-    parser.add_argument('-V', '--version', action='version', version='%(prog)s ' + __version__, help='Show the version number and exit.')
+    parser.add_argument('-H', '/H', '--hosts', dest='hosts', default='192.168.1.', type=str, help='The IP segment.', metavar='192.168.1.')
+    parser.add_argument('-b', '/b', '--begin', dest='begin', default=1, type=int, help='The begin of the IP segment.', metavar='1')
+    parser.add_argument('-e', '/e', '--end', dest='end', default=None, type=int, help='The end of the IP segment.', metavar='254')
+    parser.add_argument('-p', '/p', '--ports', dest='ports', default='80,443', type=str, help='Target ports.', metavar='80,443')
+    parser.add_argument('-t', '/t', '--timeout', dest='timeout', default=1, type=int, help='Timeout.', metavar='1')
+    parser.add_argument('-v', '/v', '--verbose', dest='verbose', default=0, action='count', help='Verbose mode.')
+    parser.add_argument('-V', '/V', '--version', action='version', version='%(prog)s ' + __version__, help='Show the version number and exit.')
 
     args = parser.parse_args()
     ports = args.ports.split(',')
