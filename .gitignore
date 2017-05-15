@@ -1,0 +1,12 @@
+*.*~
+*.rej
+*.swo
+*.swp
+*.~$lock
+.#*
+
+__temp/
+__pycache__/
+*.py[cod]
+*$py.class
+
