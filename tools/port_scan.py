@@ -27,7 +27,7 @@ threads = []
 
 def port_scanner(host: str, port: int, verbose: int =0) -> print:
     '''
-    Scan the hosts's port and print the results.
+    扫描端口并直接在屏幕打印状态
     '''
 
     try:
@@ -57,6 +57,7 @@ def main():
     parser.add_argument('-b', '--begin', dest='begin', default=1, type=int, help='The begin of the IP segment.', metavar='1')
     parser.add_argument('-e', '--end', dest='end', default=None, type=int, help='The end of the IP segment.', metavar='254')
     parser.add_argument('-p', '--ports', dest='ports', default='80,443', type=str, help='Target ports.', metavar='80,443')
+    parser.add_argument('-t', '--timeout', dest='timeout', default=1, type=int, help='Timeout.', metavar='1')
     parser.add_argument('-v', '--verbose', dest='verbose', default=0, action='count', help='Verbose mode.')
     parser.add_argument('-V', '--version', action='version', version='%(prog)s ' + __version__, help='Show the version number and exit.')
 
@@ -66,7 +67,7 @@ def main():
     if (args.end == None) or (args.end < args.begin):
         args.end = args.begin
 
-    setdefaulttimeout(1)
+    setdefaulttimeout(args.timeout)
 
     while args.begin <= args.end:
 
