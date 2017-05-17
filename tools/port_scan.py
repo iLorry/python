@@ -9,7 +9,7 @@
 #        Email: cclorry@gmail.com
 #     HomePage:
 #      Version: 0.0.1
-#   LastChange: 2017-05-16 02:13:09
+#   LastChange: 2017-05-17 15:30:59
 #      History:
 #=============================================================================
 
@@ -46,9 +46,9 @@ def port_scanner(host: str, port: int, verbose: int =0) -> print:
         else:
             print('[CLOSE] %s:%d' % (host, port))
 
-def main():
+def create_parser():
     '''
-    接收参数，并发请求 port_scanner
+    接收参数
     '''
 
     parser = argparse.ArgumentParser(description='Scan the hosts\'s port.', prefix_chars='-/')
@@ -61,7 +61,14 @@ def main():
     parser.add_argument('-v', '/v', '--verbose', dest='verbose', default=0, action='count', help='Verbose mode.')
     parser.add_argument('-V', '/V', '--version', action='version', version='%(prog)s ' + __version__, help='Show the version number and exit.')
 
-    args = parser.parse_args()
+    return parser.parse_args()
+
+def main():
+    '''
+    并发请求
+    '''
+
+    args = create_parser()
     ports = args.ports.split(',')
 
     if (args.end == None) or (args.end < args.begin):
