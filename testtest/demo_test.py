@@ -45,6 +45,6 @@ class Case(unittest.TestCase):
         self.assertTrue(demo.true(), 'Test true() fail!')
 
 if __name__ == '__main__':
-    unittest.main(module=__name__, buffer=True, exit=False)
+    unittest.main(module=__name__, buffer=True, verbosity=2, exit=False)
 
 # vim: noai:ts=4:sw=4
