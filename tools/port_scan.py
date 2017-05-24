@@ -79,7 +79,7 @@ def main():
     while args.begin <= args.end:
 
         for port in ports:
-            host = '%s%s' % (args.hosts, args.begin)
+            host = '{0}{1}'.format(args.hosts, args.begin)
             t = threading.Thread(target=port_scanner, args=(host, int(port), args.verbose))
             t.start()
 
