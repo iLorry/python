@@ -1,5 +1,4 @@
 # -*- coding:utf-8 -*-
-
 '''
 #=============================================================================
 #     FileName: ping_host.py
@@ -21,20 +20,60 @@ import argparse
 __version__ = '0.0.1'
 __all__ = ['main']
 
+
 def create_parser():
     '''
     接收参数
     '''
 
-    parser = argparse.ArgumentParser(description='Ping the host.', prefix_chars='-/')
+    parser = argparse.ArgumentParser(
+        description='Ping the host.', prefix_chars='-/')
 
-    parser.add_argument('-H', '/H', '--host', dest='host', default='192.168.1.1', type=str, help='The HOST.', metavar='192.168.1.1')
-    parser.add_argument('-w', '/w', '--wait', dest='wait', default=3, type=int, help='The intervals.', metavar='3')
-    parser.add_argument('-l', '/l', '--logs-path', dest='logs_path', default='./logs/', type=str, help='The logs path.', metavar='./logs/')
-    parser.add_argument('-v', '/v', '--verbose', dest='verbose', default=0, action='count', help='Verbose mode.')
-    parser.add_argument('-V', '/V', '--version', action='version', version='%(prog)s ' + __version__, help='Show the version number and exit.')
+    parser.add_argument(
+        '-H',
+        '/H',
+        '--host',
+        dest='host',
+        default='192.168.1.1',
+        type=str,
+        help='The HOST.',
+        metavar='192.168.1.1')
+    parser.add_argument(
+        '-w',
+        '/w',
+        '--wait',
+        dest='wait',
+        default=3,
+        type=int,
+        help='The intervals.',
+        metavar='3')
+    parser.add_argument(
+        '-l',
+        '/l',
+        '--logs-path',
+        dest='logs_path',
+        default='./logs/',
+        type=str,
+        help='The logs path.',
+        metavar='./logs/')
+    parser.add_argument(
+        '-v',
+        '/v',
+        '--verbose',
+        dest='verbose',
+        default=0,
+        action='count',
+        help='Verbose mode.')
+    parser.add_argument(
+        '-V',
+        '/V',
+        '--version',
+        action='version',
+        version='%(prog)s ' + __version__,
+        help='Show the version number and exit.')
 
     return parser.parse_args()
+
 
 def main():
 
@@ -59,7 +98,8 @@ def main():
             else:
                 c = 'n'
             output = os.popen('ping -{0} 1 {1}'.format(c, args.host)).read()
-            ip = re.search(r'(?<![\.\d])(?:\d{1,3}\.){3}\d{1,3}(?![\.\d])', output).group()
+            ip = re.search(r'(?<![\.\d])(?:\d{1,3}\.){3}\d{1,3}(?![\.\d])',
+                           output).group()
             response_time = re.search(r'=(\d+)\s*ms', output).group(1)
         except:
             ip = response_time = '---'
@@ -81,6 +121,7 @@ def main():
             f.write(info + '\n')
 
         time.sleep(int(args.wait))
+
 
 if __name__ == '__main__':
     main()

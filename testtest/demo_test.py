@@ -1,6 +1,4 @@
-#!/usr/bin/python3
 # -*- coding: utf-8 -*-
-
 '''
 #=============================================================================
 #     FileName: demo_test.py
@@ -20,9 +18,9 @@ import unittest2 as unittest
 
 import demo
 
+
 class Case(unittest.TestCase):
     @classmethod
-
     def setUp(self):
         pass
 
@@ -39,10 +37,12 @@ class Case(unittest.TestCase):
         if not hasattr(sys.stdout, 'getvalue'):
             self.fail('Need to run in buffered mode.')
 
-        self.assertEqual(sys.stdout.getvalue().strip(), string, 'Test string() fail!')
+        self.assertEqual(sys.stdout.getvalue().strip(), string,
+                         'Test string() fail!')
 
     def test_true(self):
         self.assertTrue(demo.true(), 'Test true() fail!')
+
 
 if __name__ == '__main__':
     unittest.main(module=__name__, buffer=True, verbosity=2, exit=False)
