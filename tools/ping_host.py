@@ -8,7 +8,7 @@
 #        Email: cclorry@gmail.com
 #     HomePage:
 #      Version: 0.0.1
-#   LastChange: 2017-05-25 00:19:04
+#   LastChange: 2017-06-03 11:01:41
 #      History:
 #=============================================================================
 
@@ -48,7 +48,10 @@ def main():
     if os.path.exists(logs_path) == False:
         os.makedirs(logs_path)
 
+    pause_show_host = 10
+
     while True:
+
         # os.popen("ipconfig /flushdns")
         try:
             if system == 'linux':
@@ -66,6 +69,13 @@ def main():
 
         if args.verbose > 0:
             print(info)
+
+            if args.verbose > 1:
+                if pause_show_host == 1:
+                    print(args.host)
+                    pause_show_host = 10
+                else:
+                    pause_show_host -= 1
 
         with open(logs_path + args.host + '.log', 'a') as f:
             f.write(info + '\n')
