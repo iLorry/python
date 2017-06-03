@@ -1,6 +1,4 @@
-#!/usr/bin/python3
 # -*- coding: utf-8 -*-
-
 '''
 #=============================================================================
 #     FileName: demo.py
@@ -15,13 +13,17 @@
 
 '''
 
+
 def sum(x, y):
     return x + y
+
 
 def string(string):
     print(string)
 
+
 def true():
     return True
+
 
 # vim: noai:ts=4:sw=4
