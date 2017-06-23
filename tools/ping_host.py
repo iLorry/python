@@ -7,18 +7,19 @@
 #        Email: cclorry@gmail.com
 #     HomePage:
 #      Version: 0.0.1
-#   LastChange: 2017-06-03 11:01:41
+#   LastChange: 2017-06-24 02:40:40
 #      History:
 #=============================================================================
 
 '''
 
 import os, sys, time, re
+import requests, socket
 import platform
 import argparse
 
 __version__ = '0.0.1'
-__all__ = ['main']
+__all__ = ['main', 'get_host_ip', 'get_outer_ip']
 
 
 def create_parser():
@@ -75,6 +76,32 @@ def create_parser():
     return parser.parse_args()
 
 
+def get_host_ip():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+    except:
+        ip = '127.0.0.1'
+    finally:
+        s.close()
+
+    return ip
+
+
+def get_outer_ip():
+    url = r'http://checkip.dyndns.org'
+    timeout = 3
+
+    try:
+        res = requests.get(url, timeout=timeout)
+        status = res.status_code
+        if status == 200:
+            return re.search('\d+\.\d+\.\d+\.\d+', res.text).group(0)
+    except:
+        return False
+
+
 def main():
 
     args = create_parser()
@@ -112,7 +139,8 @@ def main():
 
             if args.verbose > 1:
                 if pause_show_host == 1:
-                    print(args.host)
+                    ip = get_outer_ip() if get_outer_ip() else get_host_ip()
+                    print('{0} > {1}'.format(ip, args.host))
                     pause_show_host = 10
                 else:
                     pause_show_host -= 1
