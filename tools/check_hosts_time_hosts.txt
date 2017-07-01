@@ -1,0 +1,7 @@
+www.qq.com
+www.taobao.com:443
+www.google.com
+127.0.0.1
+
+; An empty line is ignored
+192.168.1.1
