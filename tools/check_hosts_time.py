@@ -7,7 +7,7 @@
 #        Email: cclorry@gmail.com
 #     HomePage:
 #      Version: 0.0.1
-#   LastChange: 2017-07-02 11:02:51
+#   LastChange: 2017-07-02 11:41:24
 #      History:
 #=============================================================================
 
@@ -56,9 +56,9 @@ def create_parser(filename):
     return parser.parse_args()
 
 
-def get_hosts():
+def get_hosts(hosts_file):
     hosts = []
-    f = open(args.hosts, 'r', encoding='UTF-8')
+    f = open(hosts_file, 'r', encoding='UTF-8')
     ignore = [';', '#']
 
     while True:
@@ -98,7 +98,7 @@ def get_host_time(host, timezone=8, timeout=3):
 def main():
     threads = []
 
-    hosts = get_hosts()
+    hosts = get_hosts(args.hosts)
 
     for host in hosts:
         t = threading.Thread(
