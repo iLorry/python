@@ -7,13 +7,14 @@
 #        Email: cclorry@gmail.com
 #     HomePage:
 #      Version: 0.0.1
-#   LastChange: 2017-07-02 01:53:27
+#   LastChange: 2017-07-02 11:02:51
 #      History:
 #=============================================================================
 
 '''
 
-import os, time, threading, argparse, http.client
+import os, time, threading, argparse
+from http.client import HTTPConnection
 
 __version__ = '0.0.1'
 
@@ -78,7 +79,7 @@ def get_filename_and_ext(filename):
 
 def get_host_time(host, timezone=8, timeout=3):
     try:
-        conn = http.client.HTTPConnection(host, timeout=timeout)
+        conn = HTTPConnection(host, timeout=timeout)
         conn.request('GET', '/')
         res = conn.getresponse().getheader('date')
         gmt = time.strptime(res[5:25], "%d %b %Y %H:%M:%S")
