@@ -7,13 +7,14 @@
 #        Email: cclorry@gmail.com
 #     HomePage:
 #      Version: 0.0.1
-#   LastChange: 2017-07-02 01:53:27
+#   LastChange: 2017-07-02 11:41:24
 #      History:
 #=============================================================================
 
 '''
 
-import os, time, threading, argparse, http.client
+import os, time, threading, argparse
+from http.client import HTTPConnection
 
 __version__ = '0.0.1'
 
@@ -55,9 +56,9 @@ def create_parser(filename):
     return parser.parse_args()
 
 
-def get_hosts():
+def get_hosts(hosts_file):
     hosts = []
-    f = open(args.hosts, 'r', encoding='UTF-8')
+    f = open(hosts_file, 'r', encoding='UTF-8')
     ignore = [';', '#']
 
     while True:
@@ -78,7 +79,7 @@ def get_filename_and_ext(filename):
 
 def get_host_time(host, timezone=8, timeout=3):
     try:
-        conn = http.client.HTTPConnection(host, timeout=timeout)
+        conn = HTTPConnection(host, timeout=timeout)
         conn.request('GET', '/')
         res = conn.getresponse().getheader('date')
         gmt = time.strptime(res[5:25], "%d %b %Y %H:%M:%S")
@@ -97,7 +98,7 @@ def get_host_time(host, timezone=8, timeout=3):
 def main():
     threads = []
 
-    hosts = get_hosts()
+    hosts = get_hosts(args.hosts)
 
     for host in hosts:
         t = threading.Thread(
