@@ -7,43 +7,21 @@
 #        Email: cclorry@gmail.com
 #     HomePage:
 #      Version: 0.0.1
-#   LastChange: 2017-05-17 15:30:59
+#   LastChange: 2017-07-16 16:40:34
 #      History:
 #=============================================================================
 
 '''
 
-from socket import *
 import threading
 import argparse
+from socket import *
 
 __version__ = '0.0.1'
 __all__ = ['port_scanner', 'main']
 
 lock = threading.Lock()
 threads = []
-
-
-def port_scanner(host: str, port: int, verbose: int=0) -> print:
-    '''
-    扫描端口并直接在屏幕打印状态
-    '''
-
-    try:
-        s = socket(AF_INET, SOCK_STREAM)
-        s.connect((host, port))
-        lock.acquire()
-        if verbose < 1:
-            print('%s:%d' % (host, port))
-        else:
-            print('[OPEN] %s:%d' % (host, port))
-        lock.release()
-        s.close()
-    except:
-        if verbose < 1:
-            pass
-        else:
-            print('[CLOSE] %s:%d' % (host, port))
 
 
 def create_parser():
@@ -118,6 +96,28 @@ def create_parser():
     return parser.parse_args()
 
 
+def port_scanner(host: str, port: int, verbose: int=0) -> print:
+    '''
+    扫描端口并直接在屏幕打印状态
+    '''
+
+    try:
+        s = socket(AF_INET, SOCK_STREAM)
+        s.connect((host, port))
+        lock.acquire()
+        if verbose < 1:
+            print('%s:%d' % (host, port))
+        else:
+            print('[OPEN] %s:%d' % (host, port))
+        lock.release()
+        s.close()
+    except:
+        if verbose < 1:
+            pass
+        else:
+            print('[CLOSE] %s:%d' % (host, port))
+
+
 def main():
     '''
     并发请求
@@ -148,6 +148,6 @@ def main():
 if __name__ == '__main__':
     main()
 
-# demo: __name__ --hosts=192.168.1. --begin=1 --end=255 --ports=80,443 -v
+# demo: __file__ --hosts=192.168.1. --begin=1 --end=255 --ports=80,443 -v
 
 # vim: noai:ts=4:sw=4

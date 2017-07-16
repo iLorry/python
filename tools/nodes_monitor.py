@@ -13,7 +13,10 @@
 
 '''
 
-import re, os, time, argparse
+import os
+import time
+import re
+import argparse
 from urllib.parse import urlparse
 
 __version__ = '0.0.1'
@@ -123,6 +126,7 @@ def get_node_list(nodes_file: str, ld: str='(', rd: str=')') -> dict:
         ; 8.8.8.8(Google DNS)
         8.8.4.4
     """
+
     f = open(nodes_file, 'r', encoding='UTF-8')
     ignore = [';', '#']
     nodes = {}

@@ -7,13 +7,16 @@
 #        Email: cclorry@gmail.com
 #     HomePage:
 #      Version: 0.0.1
-#   LastChange: 2017-06-12 23:55:11
+#   LastChange: 2017-07-16 16:42:34
 #      History:
 #=============================================================================
 
 '''
 
-import os, glob, time, shutil
+import os
+import time
+import glob
+import shutil
 import argparse
 
 __version__ = '0.0.1'
@@ -163,6 +166,6 @@ def main():
 if __name__ == '__main__':
     main()
 
-# demo: __name__ --logs-file=./logs/file.log --source=./source --target=./target -r -v
+# demo: __file__ --logs-file=./logs/file.log --source=./source --target=./target -r -v
 
 # vim: noai:ts=4:sw=4

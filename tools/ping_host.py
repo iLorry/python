@@ -7,14 +7,18 @@
 #        Email: cclorry@gmail.com
 #     HomePage:
 #      Version: 0.0.1
-#   LastChange: 2017-06-24 02:40:40
+#   LastChange: 2017-07-16 16:40:50
 #      History:
 #=============================================================================
 
 '''
 
-import os, sys, time, re
-import requests, socket
+import os
+import sys
+import time
+import re
+import requests
+import socket
 import platform
 import argparse
 
@@ -154,6 +158,6 @@ def main():
 if __name__ == '__main__':
     main()
 
-# demo: __name__ --logs-path="./logs" --host=www.qq.com --wait=3 -v
+# demo: __file__ --logs-path="./logs" --host=www.qq.com --wait=3 -v
 
 # vim: noai:ts=4:sw=4

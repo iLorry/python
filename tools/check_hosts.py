@@ -7,14 +7,17 @@
 #        Email: cclorry@gmail.com
 #     HomePage:
 #      Version: 0.0.1
-#   LastChange: 2017-07-02 14:48:54
+#   LastChange: 2017-07-16 16:44:45
 #      History:
 #=============================================================================
 
 '''
 
-import os, requests, threading, argparse
+import os
 import json
+import requests
+import threading
+import argparse
 
 __version__ = '0.0.1'
 
