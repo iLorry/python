@@ -7,14 +7,23 @@
 #        Email: cclorry@gmail.com
 #     HomePage:
 #      Version: 0.0.1
-#   LastChange: 2017-07-16 01:38:23
+#   LastChange: 2017-07-16 16:03:31
 #      History:
 #=============================================================================
 
 '''
 
-import re, os, time, argparse
+import os
+import time
+import re
+import argparse
 from urllib.parse import urlparse
+
+__version__ = '0.0.1'
+__all__ = [
+    'run_command', 'output_log', 'scheme_to_port', 'get_node_list',
+    'wrong_status'
+]
 
 
 def create_parser():
@@ -71,6 +80,13 @@ def create_parser():
 
 
 def run_command(cmd, retry=3):
+    """运行命令并返回合并成一行的运行结果
+
+    参数:
+        cmd: 命令
+        retry: 重试次数，应对超时的情况
+    """
+
     error = '{status:cmd_error}'
     try:
         output = (os.popen(cmd).read()).strip().replace('\n', '|')
@@ -96,8 +112,22 @@ def scheme_to_port(scheme):
     }.get(scheme, 80)
 
 
-def format_ip_list(config):
-    f = open(config, 'r', encoding='UTF-8')
+def get_node_list(nodes_file: str, ld: str='(', rd: str=')') -> dict:
+    """读取 node 列表文件并提取非重复的节点 IP
+
+    参数:
+        nodes_file: 节点文件
+        ld: 左定界符
+        rd: 右定界符
+
+    节点文件格式:
+        127.0.0.1(localhost)
+        8.8.8.8(Google)
+        ; 8.8.8.8(Google DNS)
+        8.8.4.4
+    """
+
+    f = open(nodes_file, 'r', encoding='UTF-8')
     ignore = [';', '#']
     nodes = {}
 
@@ -106,16 +136,19 @@ def format_ip_list(config):
         if (not line) or (line[0] in ignore):
             break
         ip = re.findall(r"\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b", line)
-        if ip:
-            ip = ip[0]
-
-            if (ip not in nodes):
-                nodes[ip] = re.findall(r"\((.*)\)", line)[0]
+        if ip and (ip[0] not in nodes):
+            node_name = re.findall(r"\{}(.*)\{}".format(ld, rd), line)
+            if node_name:
+                nodes[ip[0]] = node_name[0]
+            else:
+                nodes[ip[0]] = ip[0]
 
     return nodes
 
 
 def wrong_status(string):
+    """错误状态特征"""
+
     codes = [
         '[None]',
         '401 Unauthorized',
@@ -133,7 +166,7 @@ def wrong_status(string):
 def main():
     args = create_parser()
 
-    nodes = format_ip_list(args.nodes)
+    nodes = get_node_list(args.nodes)
     uri = urlparse(args.url)
     port = scheme_to_port(uri.scheme)
 
