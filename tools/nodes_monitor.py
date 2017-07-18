@@ -7,7 +7,7 @@
 #        Email: cclorry@gmail.com
 #     HomePage:
 #      Version: 0.0.1
-#   LastChange: 2017-07-16 16:03:31
+#   LastChange: 2017-07-19 01:26:16
 #      History:
 #=============================================================================
 
@@ -177,15 +177,21 @@ def main():
         now = time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(time.time()))
         today = time.strftime('%Y%m%d', time.localtime(time.time()))
 
-        cmd = 'curl --head --max-time {} --resolve {}:{}:{} "{}"'.format(
-            args.timeout, uri.netloc, port, node, args.url)
+        cmd = 'curl --head --max-time {timeout} --resolve {domain}:{port}:{node} "{url}"'.format(
+            timeout=args.timeout,
+            domain=uri.netloc,
+            port=port,
+            node=node,
+            url=args.url)
         output = run_command(cmd, args.retry)
 
-        log = '{} [{}] [{}]\n'.format(now, cmd, output)
-        output_log('{}{}.{}.log'.format(args.log, uri.netloc, today), log)
+        log = '{time} [{cmd}] [{output}]\n'.format(
+            time=now, cmd=cmd, output=output)
+        output_log('{log_dir}{domain}.{date}.log'.format(
+            log_dir=args.log, domain=uri.netloc, date=today), log)
         if (output == None) or (output == '') or (wrong_status(output)):
-            output_log('{}{}.error.{}.log'.format(args.log, uri.netloc, today),
-                       log)
+            output_log('{log_dir}{domain}.error.{date}.log'.format(
+                log_dir=args.log, domain=uri.netloc, date=today), log)
 
 
 if __name__ == '__main__':
