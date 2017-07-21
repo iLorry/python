@@ -1,28 +1,31 @@
 # -*- coding: utf-8 -*-
 '''
 #=============================================================================
-#     FileName: nodes_monitor.py
+#     FileName: nodes_monitor2.py
 #         Desc:
 #       Author: Lorry
 #        Email: cclorry@gmail.com
 #     HomePage:
-#      Version: 0.0.1
-#   LastChange: 2017-07-16 16:03:31
+#      Version: 0.0.2
+#   LastChange: 2017-07-22 02:03:03
 #      History:
 #=============================================================================
 
 '''
 
 import os
-import time
+import random
 import re
+import time
+import requests
+import threading
 import argparse
 from urllib.parse import urlparse
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 __all__ = [
-    'run_command', 'output_log', 'scheme_to_port', 'get_node_list',
-    'wrong_status'
+    'create_user_agent', 'get_headers', 'output_log', 'get_node_list',
+    'check_node'
 ]
 
 
@@ -79,24 +82,49 @@ def create_parser():
     return parser.parse_args()
 
 
-def run_command(cmd, retry=3):
-    """运行命令并返回合并成一行的运行结果
+def create_user_agent(kind='rand'):
+    mark = [
+        'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)',
+        'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.2)',
+        'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)',
+        'Mozilla/4.0 (compatible; MSIE 9.0; Windows NT 6.1)',
+        'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0',
+    ]
+
+    user_agent = {
+        'tester': 'tester',
+        'rand': random.sample(mark, 1),
+    }.get(kind, kind)
+
+    return user_agent
+
+
+def get_headers(url, ip, timeout=5, retry=3, client='rand'):
+    """获取目标响应头
 
     参数:
-        cmd: 命令
-        retry: 重试次数，应对超时的情况
+        url: 目标地址，包含 http(s)://
+        ip: host ip
+        client: 客户端标识，随机或自定义
     """
 
-    error = '{status:cmd_error}'
+    u = urlparse(url)
+    t = '{scheme}://{ip}{path}'.format(scheme=u.scheme, path=u.path, ip=ip)
+    user_agent = create_user_agent(client)[0]
+
+    requests.adapters.DEFAULT_RETRIES = retry
     try:
-        output = (os.popen(cmd).read()).strip().replace('\n', '|')
+        r = requests.head(
+            t,
+            headers={'host': u.netloc,
+                     'User-Agent': user_agent},
+            timeout=timeout,
+            verify=False)
+        return r.status_code, r.headers, (r.elapsed.microseconds / 1000000)
     except:
-        output = error
-    if (output == '') and (retry > 1):
-        retry -= 1
-        run_command(cmd, retry)
-    else:
-        return output
+        return 0, "{status: 'error'}", 0
 
 
 def output_log(log, content):
@@ -105,14 +133,7 @@ def output_log(log, content):
     f.close
 
 
-def scheme_to_port(scheme):
-    return {
-        'http': 80,
-        'https': 443,
-    }.get(scheme, 80)
-
-
-def get_node_list(nodes_file: str, ld: str='(', rd: str=')') -> dict:
+def get_nodes_list(nodes_file: str, ld: str='(', rd: str=')') -> dict:
     """读取 node 列表文件并提取非重复的节点 IP
 
     参数:
@@ -146,46 +167,51 @@ def get_node_list(nodes_file: str, ld: str='(', rd: str=')') -> dict:
     return nodes
 
 
-def wrong_status(string):
-    """错误状态特征"""
+def check_node(url, node, timeout, log_dir, domain, retry=3):
+    """检测单节点信息并输出日志"""
 
-    codes = [
-        '[None]',
-        '401 Unauthorized',
-        '404 Not Found',
-        '503 Backend',
-        '503 Service Unavailable',
-        '504 Gateway Time-out',
-    ]
-    for code in codes:
-        if (string.find(code) > -1):
-            return True
-    return False
+    now = time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(time.time()))
+    today = time.strftime('%Y%m%d', time.localtime(time.time()))
+
+    code, headers, elapsed = get_headers(url, node, timeout, retry)
+
+    log = '{time} {node} {url} {code} {elapsed} [{output}]\n'.format(
+        time=now,
+        node=node,
+        url=url,
+        code=code,
+        elapsed=elapsed,
+        output=headers)
+    output_log('{log_dir}{domain}.{date}.log'.format(
+        log_dir=log_dir, domain=domain, date=today), log)
+
+    if code != 200:
+        output_log('{log_dir}{domain}.{date}.{code}.log'.format(
+            log_dir=log_dir, domain=domain, date=today, code=code), log)
 
 
 def main():
     args = create_parser()
-
-    nodes = get_node_list(args.nodes)
+    nodes = get_nodes_list(args.nodes)
     uri = urlparse(args.url)
-    port = scheme_to_port(uri.scheme)
+
+    concurrent = 30
+    semaphore = threading.BoundedSemaphore(concurrent)
+    threads = []
 
     if not os.path.exists(args.log):
         os.mkdir(r'{}'.format(args.log))
 
     for node in nodes:
-        now = time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(time.time()))
-        today = time.strftime('%Y%m%d', time.localtime(time.time()))
+        t = threading.Thread(
+            target=check_node,
+            args=(args.url, node, args.timeout, args.log, uri.netloc,
+                  args.retry))
+        t.start()
+        threads.append(t)
 
-        cmd = 'curl --head --max-time {} --resolve {}:{}:{} "{}"'.format(
-            args.timeout, uri.netloc, port, node, args.url)
-        output = run_command(cmd, args.retry)
-
-        log = '{} [{}] [{}]\n'.format(now, cmd, output)
-        output_log('{}{}.{}.log'.format(args.log, uri.netloc, today), log)
-        if (output == None) or (output == '') or (wrong_status(output)):
-            output_log('{}{}.error.{}.log'.format(args.log, uri.netloc, today),
-                       log)
+    for t in threads:
+        t.join()
 
 
 if __name__ == '__main__':
